@@ -5,17 +5,18 @@
  */
 const BASE_URL = 'https://api.imooc-blog.lgdsunday.club/api';
 
-function request({ data, url, method = 'GET' }) {
+function request({ data, url, method }) {
     return new Promise((resolve, reject) => {
         uni.request({
             url: '',
             data,
-            header: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-            },
-            method: 'GET',
+            // header: {
+            //     Accept: 'application/json',
+            //     'Content-Type': 'application/json',
+            //     'X-Requested-With': 'XMLHttpRequest',
+            // },
+            // method: 'GET',
+            method,
             sslVerify: true,
             success: ({ data, statusCode, header }) => {
                 // 看后端接口文档返回的是什么

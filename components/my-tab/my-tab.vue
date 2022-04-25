@@ -9,7 +9,7 @@
         :scroll-left="scrollLeft"
       >
         <view class="scroll-content">
-          <view class="tab-ite m-box">
+          <view class="tab-item-box">
             <!--  -->
             <block v-for="(item, index) in tabList" :key="index">
               <view
@@ -47,6 +47,11 @@
 export default {
   name: "my-tab",
   props: {
+     // 父组件传入的 tabs 数据
+    tabData: {
+      type: Array,
+      default: () => []
+    },
     config: {
       type: Object,
       default: () => {
@@ -177,6 +182,11 @@ export default {
       // 该回调将会在侦听开始之后被立即调用
       immediate: true,
     },
+    config: {
+      handler(val) {
+        this.defaultConfig = { ...defaultConfig, ...val };
+      }
+    }
   },
 };
 </script>
