@@ -16,18 +16,33 @@
       ></my-tabs>
     </view>
 
-    <view>
-      <uni-load-more :status="loading" v-if="isLoading" />
-      <block v-else>
-        <hot-list-item
-          v-for="(item, index) in listData[currentIndex]"
-          :data="item"
-          :key="index"
-          :ranking="index + 1"
-        >
-        </hot-list-item>
-      </block>
-    </view>
+    <!-- 基于 swiper 的 list 列表 -->
+    <swiper
+      class="swiper"
+      :current="currentIndex"
+      :style="{ height: currentSwiperHeight + 'px' }"
+      @animationfinish="onSwiperEnd"
+      @change="onSwiperChange"
+    >
+      <swiper-item class="swiper-item" v-for="(tabItem, tabIndex) in tabData" :key="tabIndex">
+        <view>
+          <!-- 加载动画 -->
+          <uni-load-more status="loading" v-if="isLoading"></uni-load-more>
+          <!-- 列表 -->
+          <block v-else>
+            <!-- 列表循环数据更改为 listData[tabIndex] -->
+            <hot-list-item
+              :class="'hot-list-item-' + tabIndex"
+              v-for="(item, index) in listData[tabIndex]"
+              :key="index"
+              :data="item"
+              :ranking="index + 1"
+              @click="onItemClick(item)"
+            ></hot-list-item>
+          </block>
+        </view>
+      </swiper-item>
+    </swiper>
   </view>
 </template>
 
@@ -44,8 +59,12 @@ export default {
       currentIndex: 0,
       // 以 index 为 key，对应的 list 为 val
       listData: {},
-      // 当前 swiper 的高度
+       // 当前 swiper 的高度
       currentSwiperHeight: 0,
+      // 以 index 为 key，对应的 swiper 的高度 为 val
+      swiperHeightData: {},
+      // 当前的滚动距离
+      currentPageScrollTop: 0
     };
   },
   methods: {
@@ -54,6 +73,7 @@ export default {
       // this.tabData = list;
       const { data } = await getHotList();
       this.tabData = data.list;
+      this.getHotListFromTab();
     },
     async getHotListFromTabType() {
       // id 从哪里获取啊，从第一个接口里面获取的tabData 数组里面的id，
@@ -70,11 +90,13 @@ export default {
 
       this.isLoading = false;
 
-      setTimeout(() => {
+      // 因为 this.$nextTick 存在一定的兼容性问题，所以更加推荐使用 setTimeout
+      setTimeout(async () => {
+        // 获取当前 swiper 的高度
         this.currentSwiperHeight = await this.getCurrentSwiperHeight();
-        
-
-      },0)
+        // 放入缓存
+        this.swiperHeightData[this.currentIndex] = this.currentSwiperHeight;
+      }, 0);
 
       set;
     },
@@ -96,6 +118,13 @@ export default {
           .exec();
       });
     },
+
+    onPageScroll({ scrollTop }) {
+      this.currentPageScrollTop = scrollTop;
+    },
+    onSwitchChange(e) {
+      this.currentIndex = e.detail.current;
+    }
   },
 };
 </script>

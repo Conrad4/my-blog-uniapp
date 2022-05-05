@@ -166,6 +166,7 @@ export default {
     defaultIndex: {
       handler(index) {
         this.activeIndex = index;
+        // 当list向右滑动，因为滑块不会跟随，后面加上的条件
         this.tabToIndex();
       },
       immediate: true,
